@@ -1,0 +1,294 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @page {
+            margin: 0; 
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            color: #333;
+            background-color: #00ffdd18;
+            transition: font-size 0.3s, line-height 0.3s;
+        }
+
+        .resume-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%; 
+            padding: 10px;
+            box-shadow: none;
+            box-sizing: border-box; 
+        }
+
+        .left-column, .right-column {
+            flex: 1;
+            padding: 5px;
+            box-sizing: border-box; 
+        }
+
+        .card {
+            background: #ffffff; 
+            border: 1px solid #ddd;
+            border-radius: 8px; 
+            padding: 4px; 
+            margin-bottom: 4px; 
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box; 
+            font-size: clamp(7px, 1.1vw, 10px); 
+            line-height: 1.1; 
+        }
+
+        h2, h3, h4 {
+            margin: 2px 0; 
+        }
+
+        h2 {
+            font-size: 20px; 
+            color: #4a90e2;
+        }
+
+        h3 {
+            font-size: 14px; 
+            color: #5d6d7e;
+        }
+
+        h4 {
+            font-size: 12px; 
+            color: #7d3c98;
+        }
+
+        .section {
+            margin-bottom: 3px; 
+        }
+
+        .section hr {
+            border: 1px solid #ddd;
+            margin: 4px 0; 
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0; 
+            margin: 0; 
+        }
+
+        li {
+            margin-bottom: 1px; 
+        }
+
+        .skill {
+            background: #96fce980; 
+            border-radius: 7px; 
+            padding: 1px 3px; 
+            display: inline-block;
+            margin-right: 5px; 
+            box-shadow: none; 
+            font-size: 9px; 
+            color: #333; 
+            
+            transition: background 0.3s; 
+            margin: 2px 0; 
+        }
+
+
+        .skill:hover {
+            background: #d1f1ef; 
+        }
+
+        .highlight {
+            color: #4a90e2;
+            font-weight: bold; 
+        }
+
+        .label {
+            font-weight: bold; 
+            color: #333; 
+        }
+
+        a {
+            color: #3498db;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .experience p, .education p, .projects p {
+            margin: 2px 0;
+        }
+
+        @media (max-height: 600px) {
+            h2, h3, h4, p, li {
+                line-height: 1.5; 
+            }
+            .card {
+                font-size: 8px; 
+                line-height: 1.1; 
+            }
+        }
+
+        @media (min-height: 800px) {
+            .card {
+                font-size: 10px;
+                line-height: 1.2; 
+            }
+        }
+
+    </style>
+    <title>Резюме</title>
+</head>
+<body>
+    <div class="resume-container">
+        <div class="left-column">
+            <h2 class="fullname">{{ resume.fullname }}</h2>
+            {% if resume.position %}
+                <h3 class="position">{{ resume.position }}</h3>
+            {% endif %}
+
+            <div class="card section skills">
+                <h4><i class="fas fa-cogs"></i> Навыки</h4>
+                <hr>
+                <div>
+                    {% for skill in skills %}
+                        <div class="skill">{{ skill }}</div>
+                    {% empty %}
+                        <span>Навыки не добавлены</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% if resume.educations.count > 0 %}
+                <div class="card section education">
+                    <h4><i class="fas fa-graduation-cap"></i> Образование</h4>
+                    <hr>
+                        <ul>
+                            {% for education in resume.educations.all %}
+                                <li>
+                                    <strong class="highlight">{{ education.institution_name }}</strong> {% if education.start_date %}({{ education.formatted_dates }}){% endif %}
+                                    <p><em class="label">Степень:</em> {{ education.degree }}</p>
+                                    {% if education.faculty %}<p><em class="label">Факультет/курс:</em> {{ education.faculty }}</p>{% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                </div>
+            {% endif %}
+
+            {% if resume.projects.count > 0 %}
+                <div class="card section projects">
+                    <h4><i class="fas fa-project-diagram"></i> Проекты</h4>
+                    <hr>
+                        <ul>
+                            {% for project in resume.projects.all %}
+                                {% if project.project_name|length > 0 or project.project_description|length > 0 or project.github_link or project.technologies_used %}
+                                    <li>
+                                        {% if project.project_name %}<strong class="highlight">{{ project.project_name }}</strong>{% else %}<strong>Проект {{ forloop.counter }}</strong>{% endif %}
+                                        {% if project.project_description %}<p><em class="label">Описание:</em> {{ project.project_description|linebreaksbr }}</p>{% endif %}
+                                        {% if project.technologies_used %}<p><em class="label">Использованные технологии:</em> {{ project.technologies_used }}</p>{% endif %}
+                                        {% if project.github_link %}
+                                            <em class="label">GitHub:</em> <a href="{{ project.github_link }}">{{ project.github_link }}</a>
+                                        {% endif %}
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+            {% endif %}
+        </div>
+    
+        <div class="right-column">
+            
+
+        
+
+
+            {% if resume.about %}
+                <div class="card section about-me">
+                    <h4><i class="fas fa-user"></i> Обо мне</h4>
+                    <hr>
+                    <p>{{ resume.about }}</p>
+                </div>
+            {% endif %}
+            
+            {% if resume.work_experiences.count > 0 %}
+                <div class="card section experience">
+                    <h4><i class="fas fa-briefcase"></i> Опыт работы</h4>
+                    <hr>
+                    <p>{{ resume.years_of_work }}</p>
+                    <ul>
+                        {% for experience in resume.work_experiences.all %}
+                            <li>
+                                <strong class="highlight">{{ experience.company_name }}</strong> {% if experience.start_date %}({{ experience.formatted_dates }}){% endif %}
+                                {% if experience.position %}<p><em class="label">Позиция:</em> {{ experience.position }}</p>{% endif %}
+                                {% if experience.work_description %}<p><em class="label">Описание:</em> {{ experience.work_description|linebreaksbr }}</p>{% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <div class="card section">
+                <h4><i class="fas fa-address-book"></i> Контакты</h4>
+                <hr>
+                <ul>
+                    {% if resume.email %}
+                        <li><strong>Email:</strong> {{ resume.email }}</li>
+                    {% endif %}
+                    {% if resume.phone_number %}
+                        <li><strong>Телефон:</strong> {{ resume.phone_number }}</li>
+                    {% endif %}
+                    {% if resume.github %}
+                        <li><strong>GitHub:</strong> <a href="{{ resume.github }}">{{ resume.github }}</a></li>
+                    {% endif %}
+                    {% if resume.telegram %}
+                        <li><strong>Telegram:</strong> <a href="{{ resume.telegram }}">{{ resume.telegram }}</a></li>
+                    {% endif %}
+                    {% if resume.vk %}
+                        <li><strong>VK:</strong> <a href="{{ resume.vk }}">{{ resume.vk }}</a></li>
+                    {% endif %}
+                    {% if resume.linkedIn %}
+                        <li><strong>LinkedIn:</strong> <a href="{{ resume.linkedIn }}">{{ resume.linkedIn }}</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        function adjustFontSize() {
+            const sections = document.querySelectorAll('.card');
+
+            sections.forEach(section => {
+                const textLength = section.innerText.length; // Количество символов
+
+                if (textLength > 400) { // Уменьшаем порог
+                    section.style.fontSize = '7px'; // Меньший шрифт
+                    section.style.lineHeight = '1.1'; // Уменьшаем межстрочный интервал
+                } else if (textLength > 200) {
+                    section.style.fontSize = '9px'; // Меньший шрифт
+                    section.style.lineHeight = '1.2'; // Увеличиваем межстрочный интервал
+                } else if (textLength > 100) {
+                    section.style.fontSize = '11px'; // Увеличиваем размер
+                    section.style.lineHeight = '1.3'; // Увеличиваем межстрочный интервал
+                } else {
+                    section.style.fontSize = '12px'; // Увеличиваем размер
+                    section.style.lineHeight = '1.4'; // Увеличиваем межстрочный интервал
+                }
+            });
+        }
+
+        // Вызов функции для изменения шрифта при загрузке страницы
+        window.onload = adjustFontSize;
+        // Также можно добавить обработчик для изменения размера окна
+        window.onresize = adjustFontSize;
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Резюме: {{ resume.fullname }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5 small_size">
+    {% if request.user == resume.user %}
+    <hr>
+    
+    <h2 class="text-center mb-4"><strong>{{ resume.fullname }}</strong></h2>
+    {% if resume.position %}
+        <h3 class="text-center text-muted">{{ resume.position }}</h3>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-12 col-md-6 mb-4"> <!-- Колонка для "Навыки", "Образование" и "Проекты" -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h4 style="color: #7d3c98;"><i class="fas fa-cogs"></i> Навыки</h4>
+                    <hr>
+                    <div class="mb-4">
+                        {% for skill in skills %}
+                            <div class="skill">{{ skill }}</div>
+                        {% empty %}
+                            <span class="badge badge-secondary">Навыки не добавлены</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h4 style="color: #7d3c98;"><i class="fas fa-graduation-cap"></i> Образование</h4>
+                    <hr>
+                    {% if resume.educations.count > 0 %}
+                        <ul class="list-group mb-4">
+                        {% for education in resume.educations.all %}
+                            <li class="list-group-item">
+                                <strong class="highlight">{{ education.institution_name }}</strong> {% if education.start_date %}({{ education.formatted_dates }}){% endif %}
+                                <br>
+                                {% if education.degree %}<p class="mb-1"><em class="label">Степень:</em> {{ education.degree }}</p>{% endif %}
+                                {% if education.faculty %}<p class="mb-1"><em class="label">Факультет/название курса:</em> {{ education.faculty }}</p>{% endif %}
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h4 style="color: #7d3c98;"><i class="fas fa-project-diagram"></i> Проекты</h4>
+                    <hr>
+                    {% if resume.projects.count > 0 %}
+                        <ul class="list-group mb-4">
+                        {% for project in resume.projects.all %}
+                            <li class="list-group-item">
+                                <strong class="highlight">{{ project.project_name }}</strong>
+                                <br>
+                                {% if project.project_description %}
+                                <p class="mb-1 text-wrap"><em class="label">Описание:</em> {{ project.project_description|linebreaksbr }}</p>
+                                {% endif %}
+                                {% if project.github_link %}
+                                    <em class="label">GitHub репозиторий:</em>
+                                    <a class="btn-sm text-decoration-none" href="{{ project.github_link }}">{{ project.github_link }}</a>
+                                {% endif %}
+                                {% if project.technologies_used %}
+                                    <br><em class="label">Использованные технологии:</em><br> {{ project.technologies_used|linebreaksbr }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 mb-4"> <!-- Колонка для "Обо мне", "Опыт работы" и "Контакты" -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h4 style="color: #7d3c98;"><i class="fas fa-user"></i> Обо мне</h4>
+                    <hr>
+                    {% if resume.about %}
+                        <p class="text-wrap" style="word-break: break-word; max-width: 100%;">{{ resume.about }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <h4 style="color: #7d3c98;"><i class="fas fa-briefcase"></i> Опыт работы</h4>
+                <hr>
+                {% if resume.years_of_work or resume.work_experiences.count > 0 %}
+                    <p>{{ resume.years_of_work }}</p>
+                {% endif %}
+                {% if resume.work_experiences.count > 0 %}
+                    <ul class="list-group mb-4">
+                    {% for experience in resume.work_experiences.all %}
+                        <li class="list-group-item">
+                            <strong class="highlight">{{ experience.company_name }}</strong> {% if experience.start_date %}({{ experience.formatted_dates }}){% endif %}
+                            <br>
+                            {% if experience.position %}<p class="mb-1"><em class="label">Позиция: </em>{{ experience.position }}</p> {% endif %}
+                            {% if experience.work_description %}<p><em class="label">Описание: </em>{{ experience.work_description|linebreaksbr }}</p>{% endif %}
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-body">
+                <h4 style="color: #7d3c98;"><i class="fas fa-address-book"></i> Контакты</h4>
+                <hr>
+                <ul class="list-group mb-4">
+                    {% if resume.email %}
+                        <li class="list-group-item"><strong>Email:</strong> {{ resume.email }}</li>
+                    {% endif %}
+                    {% if resume.phone_number %}
+                        <li class="list-group-item"><strong>Телефон:</strong> {{ resume.phone_number }}</li>
+                    {% endif %}
+                    {% if resume.github %}
+                        <li class="list-group-item"><strong>GitHub:</strong> <a class="btn-sm text-decoration-none" href="{{ resume.github }}">{{ resume.github }}</a></li>
+                    {% endif %}
+                    {% if resume.telegram %}
+                        <li class="list-group-item"><strong>Telegram:</strong> <a class="btn-sm text-decoration-none" href="{{ resume.telegram }}">{{ resume.telegram }}</a></li>
+                    {% endif %}
+                    {% if resume.vk %}
+                        <li class="list-group-item"><strong>VK:</strong> <a class="btn-sm text-decoration-none" href="{{ resume.vk }}">{{ resume.vk }}</a></li>
+                    {% endif %}
+                    {% if resume.linkedIn %}
+                        <li class="list-group-item"><strong>LinkedIn:</strong> <a class="btn-sm text-decoration-none" href="{{ resume.linkedIn }}">{{ resume.linkedIn }}</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+    <a href="{% url 'app:resume_pdf' resume.id %}">
+        <button class="btn btn-primary mt-3">Скачать в PDF</button>
+    </a>
+</div>
+<br>
+{% else %}
+    <h1 class="text-center error">Вы не имеете доступ к чужому резюме</h1>
+{% endif %}
+{% endblock %}

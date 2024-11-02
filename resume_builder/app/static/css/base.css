@@ -1,0 +1,63 @@
+.bg-turquoise {
+    background-color: #aaf7ec; 
+}
+
+.custom_shadow {
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5); 
+}
+
+.small_size {
+    font-size: 10pt;  
+    line-height: 1.2; 
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0; /* отступы между разделами */
+}
+.col {
+    width: 48%; /* фиксированная ширина для каждой колонки */
+    box-sizing: border-box; /* чтобы учитывать отступы и границы */
+}
+
+.form-separator {
+    border: 1px solid #ccc;  /* Линия разделения */
+    padding: 20px;           /* Внутренние отступы */
+    margin-bottom: 20px;     /* Отступ снизу */
+    border-radius: 10px;     /* Скругление углов */
+    background-color: #f9f9f9; /* Фоновый цвет */
+}
+
+.form-separator:not(:last-child) {
+    border-bottom: 2px dashed #ddd; /* Дашированная линия между формами */
+}
+
+.skill {
+    background: #e8f8f5; /* Серый фон для навыков */
+    border-radius: 7px; /* Округлые края */
+    padding: 3px 6px; /* Уменьшенные внутренние отступы */
+    display: inline-block;
+    margin-right: 5px; /* Отступ между навыками */
+    box-shadow: none; /* Убираем любые тени */
+    font-size: 12px; /* Уменьшаем размер шрифта для навыков */
+    color: #333; /* Цвет текста */
+    /* Просто для улучшения восприятия */
+    transition: background 0.3s; /* Плавные изменения фона */
+    margin: 2px 0; /* Убираем боковые отступы и уменьшаем вертикальные */
+}
+
+
+.skill:hover {
+    background: #d1f1ef; /* Облегченный фон на ховер для интерактивности */
+}
+
+.highlight {
+    color: #4a90e2;
+    font-weight: bold; 
+}
+
+.label {
+    font-weight: bold; 
+    color: #333; 
+}

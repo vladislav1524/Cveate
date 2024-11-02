@@ -1,0 +1,57 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    volumes:
+      - .:/app
+    environment:
+      RUN_ENV: "docker"
+      CELERY_BROKER_URL: redis://redis:6379/0
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  celery:
+    build: .
+    volumes:
+      - .:/app
+    command: celery -A resume_builder worker --loglevel=info
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0 
+
+    
+  flower:
+    build: .
+    volumes:
+      - .:/app
+    command: celery -A resume_builder flower --port=5555
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: cveate_db   
+      POSTGRES_USER: cveate_user    
+      POSTGRES_PASSWORD: 65476547
+    volumes:
+      - pg_data:/var/lib/postgresql/data 
+
+volumes:
+  pg_data:
+  redis_data:
+
+
+networks:
+  default:
+    driver: bridge

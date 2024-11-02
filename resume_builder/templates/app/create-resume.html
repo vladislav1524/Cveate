@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Создание резюме{% endblock %}
+
+{% block content %}
+    <h1 class="text-center">Создание резюме</h1> <br>
+
+    <form method="post" action="{% url 'app:create-resume' %}">
+        {% csrf_token %}
+
+        <div class="mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="text-center">Основная информация</h5>
+                </div>
+                <div class="card-body">
+                    {{ resume_form|crispy }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Опыт работы -->
+        <div class="mb-4" id="work_experiences-formset">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="text-center">Опыт работы</h5> <small>(можно оставить форму пустой)</small>
+                </div>
+                <div class="card-body">
+                    {{ work_experience_formset.management_form }}
+                    {% if work_experience_formset.errors.non_field_errors  %}
+                        <div class="alert alert-danger">
+                            <ul>
+                                {% for error in work_experience_formset.errors.non_field_errors  %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                        {% for form in work_experience_formset %}   
+                        <div class="form-row mb-3">
+                            {% if form.non_field_errors %}
+                                <p class="error">{{ form.non_field_errors }}</p>
+                            {% endif %}
+                            {% if form.errors %}
+                                <p class="error">{{ form.errors }}</p>
+                            {% endif %}
+                            {{ form|crispy }}
+                            <button type="button" class="btn btn-danger remove-form btn-lg rounded-pill">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    {% endfor %}
+                    <div id="work_experiences-forms"></div>
+                    <div class="text-center">
+                        <small><small>добавьте до 5 форм</small></small> <br>
+                        <button type="button" id="add-work_experiences" class="btn btn-primary btn-lg rounded-pill">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Образование -->
+        <div class="mb-4" id="educations-formset">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="text-center">Образование</h5> <small>(можно оставить форму пустой)</small>
+                </div>
+                <div class="card-body">
+                    {{ education_formset.management_form }}
+                    {% for form in education_formset %}
+                        <div class="form-row mb-3">
+                            {% if form.non_field_errors %}
+                                <p class="error">{{ form.non_field_errors }}</p>
+                            {% endif %}
+                            {% if form.errors %}
+                                <p class="error">{{ form.errors }}</p>
+                            {% endif %}
+                            {{ form|crispy }}
+                            <button type="button" class="btn btn-danger remove-form btn-lg rounded-pill">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    {% endfor %}
+                    <div id="educations-forms"></div>
+                    <div class="text-center">
+                        <small><small>добавьте до 3 форм</small></small> <br>
+                        <button type="button" id="add-educations" class="btn btn-primary btn-lg rounded-pill">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Проекты -->
+        <div class="mb-4" id="projects-formset">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="text-center">Проекты</h5> <small>(можно оставить форму пустой)</small>
+                </div>
+                <div class="card-body">
+                    {{ project_formset.management_form }}
+                    {% for form in project_formset %}
+                        <div class="form-row mb-3">
+                            {% if form.non_field_errors %}
+                                <p class="error">{{ form.non_field_errors }}</p>
+                            {% endif %}
+                            {% if form.errors %}
+                                <p class="error">{{ form.errors }}</p>
+                            {% endif %}
+                            {{ form|crispy }}
+                            <button type="button" class="btn btn-danger remove-form btn-lg rounded-pill">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    {% endfor %}
+                    <div id="projects-forms"></div>
+                    <div class="text-center">
+                        <small><small>добавьте до 3 форм</small></small> <br>
+                        <button type="button" id="add-projects" class="btn btn-primary btn-lg rounded-pill">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-success btn-lg btn-block rounded-pill shadow">
+                <i class="fas fa-file-alt"></i> Создать резюме
+            </button>
+        </div>
+    </form>
+    <br>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+            // Инициализация индексов для формсетов
+            let workExperienceIndex = {{ work_experience_formset.total_form_count }};
+            let educationIndex = {{ education_formset.total_form_count }};
+            let projectIndex = {{ project_formset.total_form_count }};
+            
+            // Функция для добавления новой строки формы в формсет
+            function addFormsetRow(formsetHtml, index, prefix, maxForms) {
+                // Проверяем, не превышает ли количество форм максимальное значение
+                if (index < maxForms) {
+                    // Заменяем "__prefix__" в HTML-структуре формы на текущий индекс 
+                    const formHtml = formsetHtml.replace(/__prefix__/g, index);
+                    // Создаем HTML с кнопкой удаления 
+                    const htmlWithRemoveButton = `
+                        <div class="form-row mb-3 form-separator" data-prefix="${prefix}">
+                            ${formHtml}
+                            <button type="button" class="btn btn-danger remove-form btn-lg rounded-pill">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>`;
+                    // Добавляем новую строку формы в контейнер 
+                    $(`#${prefix}-forms`).append(htmlWithRemoveButton);
+                
+                    // Обновляем общее количество форм в скрытом поле формы 
+                    const totalFormsCount = $(`#id_${prefix}-TOTAL_FORMS`); // Для получения элемента по ID
+                    if (totalFormsCount.length) {
+                        totalFormsCount.val(parseInt(totalFormsCount.val()) + 1);
+                    }
+                } else {
+                    // Если превышено максимальное количество, показываем сообщение
+                    Swal.fire({
+                        title: 'Ошибка!',
+                        text: 'Достигнуто максимальное количество форм для данного блока.',
+                        icon: 'error',
+                        confirmButtonText: 'ОК'
+                    });
+                }
+            }
+        
+            // Обработчик события клика для добавления работы 
+            $('#add-work_experiences').click(function() {
+                addFormsetRow(`{{ work_experience_formset.empty_form|crispy|safe }}`, workExperienceIndex, 'work_experiences', 5);
+                workExperienceIndex++; // Увеличиваем индекс 
+            });
+        
+            // Обработчик события клика для добавления образования
+            $('#add-educations').click(function() {
+                addFormsetRow(`{{ education_formset.empty_form|crispy|safe }}`, educationIndex, 'educations', 3);
+                educationIndex++;
+            });
+        
+            // Обработчик события клика для добавления проекта 
+            $('#add-projects').click(function() {
+                addFormsetRow(`{{ project_formset.empty_form|crispy|safe }}`, projectIndex, 'projects', 3);
+                projectIndex++;
+            });
+            
+            // Обработчик события клика для кнопки удаления формы 
+            $(document).on('click', '.remove-form', function() {
+                const formRow = $(this).closest('.form-row');
+                formRow.remove();
+            
+                // Получаем префикс для обновления количества форм 
+                const prefix = formRow.data('prefix');
+                const totalForms = $(`#id_${prefix}-TOTAL_FORMS`);
+                
+                // Уменьшаем общее количество форм в скрытом поле формы 
+                const currentCount = parseInt(totalForms.val());
+                if (currentCount > 0) {
+                    totalForms.val(currentCount - 1);
+                }
+            });
+        });
+        </script>
+        
+    
+    
+{% endblock %}

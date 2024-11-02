@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Конструктор резюме{% endblock %}
+
+{% block content %}
+    <h1 class="text-center">Конструктор резюме</h1>
+    <p class="text-muted mb-4">Пример резюме:</p> <!-- Увеличен заголовок -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8">
+                <!-- Обертка для корректного отображения -->
+                <div class="ratio ratio-16x9 mb-4" style="height: 670px;"> <!-- Добавлен отступ снизу -->
+                    <iframe src="{% static 'media/example_resume.png' %}" class="w-100 h-100" style="border: none;" allowfullscreen>
+                        Этот браузер не поддерживает просмотр изображений. Вы можете скачать файл <a href="{% static 'media/example_resume.png' %}">здесь</a>.
+                    </iframe>
+                </div>
+                
+                <div class="text-center">
+                    <a href="{% static 'media/example_resume.png' %}">Полный просмотр примера</a>
+                    <br><br>
+                    <a href="{% url 'app:create-resume' %}" class="btn btn-primary">Создать резюме</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
