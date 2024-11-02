@@ -44,7 +44,7 @@ CSRF_TRUSTED_ORIGINS=...
 ```
 3. Запустите в главной директории на уровне `manage.py`:
 ```bash
-   docker-compose up --build
+docker-compose up --build
 ```
 Затем выполните миграции:
 ```bash
@@ -56,7 +56,7 @@ docker-compose exec web python manage.py migrate
 docker-compose exec web python manage.py createsuperuser
 ```
 ## Если хотите протестировать аутентификацию через социальные сети 🌐:
-1. Установите Ngrok для использования вашего компьютера как сервера и публикации сайта с HTTPS. Ссылка на Ngrok.
+1. Установите Ngrok для использования вашего компьютера как сервера и публикации сайта с HTTPS [Ссылка на Ngrok](https://ngrok.com/)
 
 2. В консоли Ngrok выполните:
 ```bash
@@ -75,3 +75,6 @@ ngrok http --hostname=<your host> 8000
 *google*: https://console.cloud.google.com/cloud-resource-manager
 
 4. Добавьте ваш домен Ngrok в CSRF_TRUSTED_ORIGINS и ALLOWED_HOSTS и запустите контейнер.
+```bash
+docker-compose up --build
+```
